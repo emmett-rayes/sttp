@@ -85,14 +85,14 @@ private[akkahttp] object BodyToAkka {
       bodyParts: Seq[AkkaMultipart.FormData.BodyPart]
   ): Try[RequestEntity] =
     r.headers.find(Util.isContentType) match {
-      case None => Success(AkkaMultipart.FormData(bodyParts: _*).toEntity())
+      case None => Success(AkkaMultipart.FormData(bodyParts: _*).toEntity)
       case Some(ct) =>
         Util.parseContentType(ct.value).map(_.mediaType).flatMap {
           case m: MediaType.Multipart =>
             Success(
               AkkaMultipart
                 .General(m, Source(bodyParts.map(bp => AkkaMultipart.General.BodyPart(bp.entity, bp.headers))))
-                .toEntity()
+                .toEntity
             )
           case _ => Failure(new RuntimeException(s"Non-multipart content type: $ct"))
         }

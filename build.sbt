@@ -133,7 +133,8 @@ val catsEffect_2_version = "2.5.5"
 
 val fs2_2_version = "2.5.12"
 
-val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.2.10"
+val akkaHttpVersion = "10.2.10"
+val akkaHttp = "com.typesafe.akka" %% "akka-http" % akkaHttpVersion
 val akkaStreamVersion = "2.6.20"
 val akkaStreams = "com.typesafe.akka" %% "akka-stream" % akkaStreamVersion
 
@@ -544,18 +545,19 @@ lazy val akkaHttpBackend = (projectMatrix in file("akka-http-backend"))
   .settings(commonJvmSettings)
   .settings(testServerSettings)
   .settings(
+    resolvers += "Akka".at("https://repo.akka.io/maven"),
     name := "akka-http-backend",
     libraryDependencies ++= Seq(
-      akkaHttp,
+      "com.typesafe.akka" %% "akka-http" % (if (scala3.contains(scalaVersion.value)) "10.6.0-M1" else akkaHttpVersion),
       // provided as we don't want to create a transitive dependency on a specific streams version,
       // just as akka-http doesn't
-      akkaStreams % "provided",
+      "com.typesafe.akka" %% "akka-stream" % (if (scala3.contains(scalaVersion.value)) "2.9.5" else "provided"),
       "com.softwaremill.sttp.shared" %% "akka" % sttpSharedVersion
     )
   )
   .dependsOn(core % compileAndTest)
   .jvmPlatform(
-    scalaVersions = scala2
+    scalaVersions = scala2 ++ scala3
   )
 
 //-- pekko
